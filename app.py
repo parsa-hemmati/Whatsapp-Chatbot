@@ -1,8 +1,7 @@
 import os
 from flask import Flask, request
-import openai
-from twilio.rest import Client
 from openai import OpenAI
+from twilio.rest import Client
 
 app = Flask(__name__)
 
@@ -24,7 +23,7 @@ def whatsapp_webhook():
         TWILIO_WHATSAPP_NUMBER = get_env_var("TWILIO_WHATSAPP_NUMBER")
 
         # Set up clients
-        client = OpenAI(api_key=OPENAI_API_KEY)
+        openai_client = OpenAI(api_key=OPENAI_API_KEY)
         twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
         # Process incoming message
@@ -35,7 +34,7 @@ def whatsapp_webhook():
             raise ValueError("Missing required message parameters")
 
         # Get response from ChatGPT
-        response = client.chat.completions.create(
+        response = openai_client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
