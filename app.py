@@ -68,7 +68,7 @@ def whatsapp_webhook():
             
             print(f"Sending message from {TWILIO_WHATSAPP_NUMBER} to {to_number}")
 
-            # Use Twilio's content template instead of body
+            # Send message via Twilio
             message = twilio_client.messages.create(
                 from_=TWILIO_WHATSAPP_NUMBER,
                 body=reply,
