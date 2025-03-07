@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request
-from openai import OpenAI
+import openai
 from twilio.rest import Client
 import traceback
 
@@ -32,13 +32,12 @@ def whatsapp_webhook():
         if not incoming_msg or not sender:
             raise ValueError("Missing required message parameters")
 
-        # Set up OpenAI client - Fix for Issue #1: Remove additional parameters
+        # Fix OpenAI client initialization
         try:
-            # Simplified client initialization to avoid 'proxies' error
-            openai_client = OpenAI(api_key=OPENAI_API_KEY)
+            openai.api_key = OPENAI_API_KEY
             
-            # Get response from ChatGPT
-            response = openai_client.chat.completions.create(
+            # Use the correct OpenAI API call
+            response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant."},
@@ -47,7 +46,7 @@ def whatsapp_webhook():
             )
             
             # Extract the response text
-            reply = response.choices[0].message.content
+            reply = response["choices"][0]["message"]["content"]
             print(f"ChatGPT response: {reply}")
 
         except Exception as e:
@@ -55,7 +54,7 @@ def whatsapp_webhook():
             print(f"Traceback: {traceback.format_exc()}")
             reply = "I apologize, but I'm having trouble connecting to my AI service right now. Please try again later."
 
-        # Set up Twilio client and send response - Fix for Issue #2: Ensure proper WhatsApp number format
+        # Fix Twilio WhatsApp number format
         try:
             twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
             
