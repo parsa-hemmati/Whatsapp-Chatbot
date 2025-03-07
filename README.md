@@ -23,6 +23,7 @@ This is a simple WhatsApp chatbot that uses OpenAI's GPT-3.5 API to generate res
 4. Fill in your credentials in the `.env` file:
    - TWILIO_ACCOUNT_SID: Your Twilio Account SID
    - TWILIO_AUTH_TOKEN: Your Twilio Auth Token
+   - TWILIO_WHATSAPP_NUMBER: Your Twilio WhatsApp number
    - OPENAI_API_KEY: Your OpenAI API key
 
 5. Start the Flask application:
@@ -36,7 +37,7 @@ This is a simple WhatsApp chatbot that uses OpenAI's GPT-3.5 API to generate res
 7. Configure your Twilio WhatsApp webhook:
    - Go to your Twilio Console
    - Navigate to WhatsApp > Settings
-   - Set the webhook URL to your ngrok URL + "/webhook" (e.g., https://your-ngrok-url.ngrok.io/webhook)
+   - Set the webhook URL to your ngrok URL + "/whatsapp" (e.g., https://your-ngrok-url.ngrok.io/whatsapp)
 
 ## Railway Deployment
 
@@ -45,11 +46,12 @@ This is a simple WhatsApp chatbot that uses OpenAI's GPT-3.5 API to generate res
 3. Add the following environment variables in Railway's dashboard:
    - TWILIO_ACCOUNT_SID
    - TWILIO_AUTH_TOKEN
+   - TWILIO_WHATSAPP_NUMBER
    - OPENAI_API_KEY
 4. Railway will automatically detect the Python project and deploy it
 5. Once deployed, Railway will provide you with a URL
-6. Update your Twilio WhatsApp webhook URL to your Railway URL + "/webhook"
-   (e.g., https://your-app-name.railway.app/webhook)
+6. Update your Twilio WhatsApp webhook URL to your Railway URL + "/whatsapp"
+   (e.g., https://your-app-name.railway.app/whatsapp)
 
 ## Usage
 
@@ -70,4 +72,4 @@ This is a simple WhatsApp chatbot that uses OpenAI's GPT-3.5 API to generate res
 - Never commit your `.env` file
 - Keep your API keys and tokens secure
 - Use HTTPS in production
-- Railway automatically provides HTTPS for your application 
+- Railway automatically provides HTTPS for your application

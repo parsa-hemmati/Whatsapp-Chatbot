@@ -30,7 +30,11 @@ def whatsapp_webhook():
         OPENAI_API_KEY = get_env_var("OPENAI_API_KEY")
         TWILIO_ACCOUNT_SID = get_env_var("TWILIO_ACCOUNT_SID")
         TWILIO_AUTH_TOKEN = get_env_var("TWILIO_AUTH_TOKEN")
-        TWILIO_WHATSAPP_NUMBER = "whatsapp:+14155238886"  # Twilio sandbox number
+        TWILIO_WHATSAPP_NUMBER = get_env_var("TWILIO_WHATSAPP_NUMBER")
+        
+        # Ensure the WhatsApp number has the correct format
+        if not TWILIO_WHATSAPP_NUMBER.startswith("whatsapp:"):
+            TWILIO_WHATSAPP_NUMBER = f"whatsapp:{TWILIO_WHATSAPP_NUMBER}"
 
         # Extract message details
         incoming_msg = request_data.get("Body", "").strip()
@@ -109,6 +113,7 @@ if __name__ == "__main__":
         get_env_var("OPENAI_API_KEY")
         get_env_var("TWILIO_ACCOUNT_SID")
         get_env_var("TWILIO_AUTH_TOKEN")
+        get_env_var("TWILIO_WHATSAPP_NUMBER")
         print("All required environment variables are set")
     except ValueError as e:
         print(f"Error: {str(e)}")
