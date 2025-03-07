@@ -36,8 +36,9 @@ def whatsapp_webhook():
         try:
             openai.api_key = OPENAI_API_KEY
             
-            # Use the new OpenAI API format
-            response = openai.chat.completions.create(
+            # Use the correct OpenAI API format
+            client = openai.OpenAI(api_key=OPENAI_API_KEY)
+            response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant."},
