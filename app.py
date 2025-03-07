@@ -32,12 +32,10 @@ def whatsapp_webhook():
         if not incoming_msg or not sender:
             raise ValueError("Missing required message parameters")
 
-        # Set up OpenAI client
+        # Set up OpenAI client - Fix for Issue #1: Remove additional parameters
         try:
-            openai_client = OpenAI(
-                api_key=OPENAI_API_KEY,
-                timeout=30.0  # Set timeout to 30 seconds
-            )
+            # Simplified client initialization to avoid 'proxies' error
+            openai_client = OpenAI(api_key=OPENAI_API_KEY)
             
             # Get response from ChatGPT
             response = openai_client.chat.completions.create(
@@ -57,13 +55,26 @@ def whatsapp_webhook():
             print(f"Traceback: {traceback.format_exc()}")
             reply = "I apologize, but I'm having trouble connecting to my AI service right now. Please try again later."
 
-        # Set up Twilio client and send response
+        # Set up Twilio client and send response - Fix for Issue #2: Ensure proper WhatsApp number format
         try:
             twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+            
+            # Ensure WhatsApp number has the correct format
+            from_number = TWILIO_WHATSAPP_NUMBER
+            if not from_number.startswith("whatsapp:"):
+                from_number = f"whatsapp:{from_number}"
+            
+            # Ensure the recipient number has the correct format
+            to_number = sender
+            if not to_number.startswith("whatsapp:"):
+                to_number = f"whatsapp:{to_number}"
+            
+            print(f"Sending message from {from_number} to {to_number}")
+            
             message = twilio_client.messages.create(
-                from_=f"whatsapp:{TWILIO_WHATSAPP_NUMBER}",
+                from_=from_number,
                 body=reply,
-                to=sender
+                to=to_number
             )
             print(f"Sent message with SID: {message.sid}")
         except Exception as e:
@@ -80,6 +91,11 @@ def whatsapp_webhook():
         print(f"Unexpected Error: {str(e)}")
         print(f"Traceback: {traceback.format_exc()}")
         return "Internal server error", 500
+
+@app.route("/", methods=["GET"])
+def index():
+    """Simple health check endpoint"""
+    return "WhatsApp Chatbot is running!", 200
 
 if __name__ == "__main__":
     # Verify environment variables on startup
