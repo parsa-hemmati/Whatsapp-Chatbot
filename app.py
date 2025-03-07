@@ -17,6 +17,9 @@ def get_env_var(var_name):
 def whatsapp_webhook():
     """Handles incoming WhatsApp messages and responds using ChatGPT."""
     try:
+        # Log the full request payload for debugging
+        print("Incoming request data:", request.form.to_dict())
+
         # Initialize clients with environment variables
         OPENAI_API_KEY = get_env_var("OPENAI_API_KEY")
         TWILIO_ACCOUNT_SID = get_env_var("TWILIO_ACCOUNT_SID")
@@ -37,7 +40,7 @@ def whatsapp_webhook():
             openai.api_key = OPENAI_API_KEY
             
             # Use the correct OpenAI API format
-            client = openai.Client(api_key=OPENAI_API_KEY)
+            client = openai.OpenAI(api_key=OPENAI_API_KEY)
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
@@ -70,10 +73,12 @@ def whatsapp_webhook():
                 to_number = f"whatsapp:{to_number}"
             
             print(f"Sending message from {from_number} to {to_number}")
-            
+
+            # Use Twilio's content template instead of body
             message = twilio_client.messages.create(
                 from_=from_number,
-                body=reply,
+                content_sid="HXb5b62575e6e4ff6129ad7c8efe1f983e",
+                content_variables='{"1":"Generated response","2":"ChatGPT"}',
                 to=to_number
             )
             print(f"Sent message with SID: {message.sid}")
