@@ -41,17 +41,41 @@ This is a simple WhatsApp chatbot that uses OpenAI's GPT-3.5 API to generate res
 
 ## Railway Deployment
 
+### Manual Deployment
+
 1. Create a new project on Railway.app
 2. Connect your GitHub repository to Railway
 3. Add the following environment variables in Railway's dashboard:
    - TWILIO_ACCOUNT_SID
    - TWILIO_AUTH_TOKEN
-   - TWILIO_WHATSAPP_NUMBER
+   - TWILIO_WHATSAPP_NUMBER (format: whatsapp:+14155238886)
    - OPENAI_API_KEY
 4. Railway will automatically detect the Python project and deploy it
 5. Once deployed, Railway will provide you with a URL
 6. Update your Twilio WhatsApp webhook URL to your Railway URL + "/whatsapp"
    (e.g., https://your-app-name.railway.app/whatsapp)
+
+### Automatic Deployment with GitHub Actions
+
+This repository includes a GitHub Actions workflow that automatically deploys to Railway when changes are pushed to the main branch.
+
+To set up automatic deployment:
+
+1. Generate a Railway token:
+   - Go to the [Railway dashboard](https://railway.app/dashboard)
+   - Click on your profile picture in the bottom left
+   - Select "Developer Settings"
+   - Create a new token with an appropriate name (e.g., "GitHub Actions")
+
+2. Add the following secrets to your GitHub repository:
+   - Go to your GitHub repository
+   - Navigate to Settings > Secrets and variables > Actions
+   - Add the following repository secrets:
+     - `RAILWAY_TOKEN`: Your Railway token
+     - `RAILWAY_PROJECT`: Your Railway project ID (get this from `railway status --json`)
+     - `RAILWAY_SERVICE`: Your Railway service ID (get this from `railway status --json`)
+
+3. Push changes to the main branch, and GitHub Actions will automatically deploy to Railway
 
 ## Usage
 

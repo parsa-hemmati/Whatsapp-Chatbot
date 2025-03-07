@@ -1,0 +1,21 @@
+name: Deploy to Railway
+
+on:
+  push:
+    branches:
+      - main  # Deploy when changes are pushed to main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Deploy to Railway
+        uses: railway/railway-action@v1
+        with:
+          railway_token: ${{ secrets.RAILWAY_TOKEN }}
+          service: ${{ secrets.RAILWAY_SERVICE }}
+          project: ${{ secrets.RAILWAY_PROJECT }}
