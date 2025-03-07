@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request
-import openai
+from openai import OpenAI
 from twilio.rest import Client
 import traceback
 
@@ -18,7 +18,13 @@ def whatsapp_webhook():
     """Handles incoming WhatsApp messages and responds using ChatGPT."""
     try:
         # Log the full request payload for debugging
-        print("Incoming request data:", request.form.to_dict())
+        request_data = request.form.to_dict()
+        print("Incoming request data:", request_data)
+
+        # Ignore status update requests (they don't contain a Body field)
+        if "Body" not in request_data:
+            print("Ignoring status update request.")
+            return "Ignored", 200
 
         # Initialize clients with environment variables
         OPENAI_API_KEY = get_env_var("OPENAI_API_KEY")
@@ -26,21 +32,23 @@ def whatsapp_webhook():
         TWILIO_AUTH_TOKEN = get_env_var("TWILIO_AUTH_TOKEN")
         TWILIO_WHATSAPP_NUMBER = "whatsapp:+14155238886"  # Twilio sandbox number
 
-        # Process incoming message
-        incoming_msg = request.values.get("Body", "").strip()
-        sender = request.values.get("From", "")
+        # Extract message details
+        incoming_msg = request_data.get("Body", "").strip()
+        sender = request_data.get("From", "")
+
+        if not incoming_msg:
+            raise ValueError("Received an empty message.")
+        if not sender:
+            raise ValueError("Missing 'From' parameter in request.")
 
         print(f"Received message: {incoming_msg} from {sender}")
 
-        if not incoming_msg or not sender:
-            raise ValueError("Missing required message parameters")
-
         # Fix OpenAI API usage
         try:
-            openai.api_key = OPENAI_API_KEY
+            client = OpenAI(api_key=OPENAI_API_KEY)
             
             # Use the correct OpenAI API format
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant."},
@@ -49,7 +57,7 @@ def whatsapp_webhook():
             )
             
             # Extract the response text
-            reply = response["choices"][0]["message"]["content"]
+            reply = response.choices[0].message.content
             print(f"ChatGPT response: {reply}")
 
         except Exception as e:
