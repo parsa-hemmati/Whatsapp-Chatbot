@@ -32,12 +32,12 @@ def whatsapp_webhook():
         if not incoming_msg or not sender:
             raise ValueError("Missing required message parameters")
 
-        # Fix OpenAI client initialization
+        # Fix OpenAI API usage
         try:
             openai.api_key = OPENAI_API_KEY
             
-            # Use the correct OpenAI API call
-            response = openai.ChatCompletion.create(
+            # Use the new OpenAI API format
+            response = openai.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant."},
@@ -46,7 +46,7 @@ def whatsapp_webhook():
             )
             
             # Extract the response text
-            reply = response["choices"][0]["message"]["content"]
+            reply = response.choices[0].message.content
             print(f"ChatGPT response: {reply}")
 
         except Exception as e:
